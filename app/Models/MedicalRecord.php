@@ -81,6 +81,14 @@ class MedicalRecord extends Model
         'vitals_height' => 'decimal:2',
         'vitals_weight' => 'decimal:2',
         'vitals_temp' => 'decimal:2',
+        'vital_signs' => 'array',
+        'attachments' => 'array',
+        'lab_results' => 'array',
+        'imaging_studies' => 'array',
+        'medications' => 'array',
+        'dosages' => 'array',
+        'frequencies' => 'array',
+        'durations' => 'array',
     ];
 
     /**

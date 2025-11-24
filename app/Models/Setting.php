@@ -49,11 +49,17 @@ class Setting extends Model
         'emergency_contact',
         'meta_title',
         'meta_description',
-        'keywords'
+        'keywords',
+        'enable_booking',
+        'enable_payment',
+        'enable_registration',
     ];
 
     protected $casts = [
-        'consultation_fee' => 'decimal:2'
+        'consultation_fee' => 'decimal:2',
+        'enable_booking' => 'boolean',
+        'enable_payment' => 'boolean',
+        'enable_registration' => 'boolean',
     ];
 
 
@@ -69,9 +75,12 @@ class Setting extends Model
         });
     }
 
+    /**
+     * Helper to get the singleton settings instance.
+     */
     public static function getSettings()
     {
-        return static::first() ?? static::create([]);
+        return static::firstOrCreate([], ['clinic_name' => 'Default Clinic']);
     }
 
     public function getLogoUrlAttribute()
