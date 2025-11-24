@@ -4,97 +4,103 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\SettingResource\Pages;
 use App\Models\Setting;
-use Filament\Infolists\Infolist;
+use Filament\Forms;
+use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Model;
 
 class SettingResource extends Resource
 {
     protected static ?string $model = Setting::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-cog-8-tooth';
+    protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
 
-    protected static ?string $navigationLabel = 'الإعدادات';
+    protected static ?string $navigationLabel = 'إعدادات النظام';
 
     protected static ?string $modelLabel = 'إعداد';
 
-    protected static ?string $pluralModelLabel = 'الإعدادات';
+    protected static ?string $pluralModelLabel = 'إعدادات النظام';
 
-    protected static ?string $navigationGroup = 'إدارة النظام';
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Forms\Components\Section::make('معلومات العيادة')
+                    ->schema([
+                        Forms\Components\TextInput::make('clinic_name')
+                            ->label('اسم العيادة')
+                            ->required(),
+                        Forms\Components\TextInput::make('clinic_phone')
+                            ->label('رقم الهاتف')
+                            ->required(),
+                        Forms\Components\TextInput::make('clinic_email')
+                            ->label('البريد الإلكتروني')
+                            ->email()
+                            ->required(),
+                        Forms\Components\Textarea::make('clinic_address')
+                            ->label('العنوان')
+                            ->required()
+                            ->columnSpanFull(),
+                    ])->columns(2),
 
-    protected static ?int $navigationSort = 8;
+                Forms\Components\Section::make('روابط التواصل الاجتماعي')
+                    ->schema([
+                        Forms\Components\TextInput::make('whatsapp_number')
+                            ->label('رقم الواتساب'),
+                        Forms\Components\TextInput::make('facebook_url')
+                            ->label('فيسبوك')
+                            ->url(),
+                        Forms\Components\TextInput::make('twitter_url')
+                            ->label('تويتر / X')
+                            ->url(),
+                        Forms\Components\TextInput::make('instagram_url')
+                            ->label('انستجرام')
+                            ->url(),
+                    ])->columns(2),
 
-    protected static ?string $recordTitleAttribute = 'key';
+                Forms\Components\Section::make('إعدادات المواعيد')
+                    ->schema([
+                        Forms\Components\TextInput::make('appointment_duration')
+                            ->label('مدة الموعد (بالدقائق)')
+                            ->numeric()
+                            ->default(30)
+                            ->required(),
+                        Forms\Components\TextInput::make('max_appointments_per_day')
+                            ->label('الحد الأقصى للمواعيد يومياً')
+                            ->numeric()
+                            ->default(20)
+                            ->required(),
+                        Forms\Components\KeyValue::make('working_hours')
+                            ->label('ساعات العمل')
+                            ->keyLabel('اليوم')
+                            ->valueLabel('الساعات')
+                            ->columnSpanFull(),
+                    ]),
+            ]);
+    }
 
-    public static function form(Tables\Table $table): array
+    public static function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('key')
             ->columns([
-                Tables\Columns\TextColumn::make('key')
-                    ->label('المفتاح')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('value')
-                    ->label('القيمة')
-                    ->limit(50),
-                Tables\Columns\TextColumn::make('type')
-                    ->label('النوع')
-                    ->badge()
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'text' => 'نص',
-                        'textarea' => 'نص طويل',
-                        'number' => 'رقم',
-                        'email' => 'بريد إلكتروني',
-                        'url' => 'رابط',
-                        'boolean' => 'نعم/لا',
-                        'image' => 'صورة',
-                        default => $state,
-                    }),
-                Tables\Columns\TextColumn::make('group')
-                    ->label('المجموعة')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('description')
-                    ->label('الوصف')
-                    ->limit(50),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label('تاريخ الإنشاء')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('clinic_name')
+                    ->label('اسم العيادة'),
+                Tables\Columns\TextColumn::make('clinic_phone')
+                    ->label('الهاتف'),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->label('آخر تحديث')
+                    ->dateTime(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('type')
-                    ->label('النوع')
-                    ->options([
-                        'text' => 'نص',
-                        'textarea' => 'نص طويل',
-                        'number' => 'رقم',
-                        'email' => 'بريد إلكتروني',
-                        'url' => 'رابط',
-                        'boolean' => 'نعم/لا',
-                        'image' => 'صورة',
-                    ]),
-                Tables\Filters\SelectFilter::make('group')
-                    ->label('المجموعة')
-                    ->options(Setting::distinct()->pluck('group', 'group')),
+                //
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
-                    ->label('تعديل'),
-                Tables\Actions\DeleteAction::make()
-                    ->label('حذف'),
+                Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
-                        ->label('حذف المحدد'),
-                ]),
-            ])
-            ->defaultSort('group', 'asc');
+                // No bulk actions needed for singleton-like settings
+            ]);
     }
 
     public static function getRelations(): array
@@ -111,20 +117,5 @@ class SettingResource extends Resource
             'create' => Pages\CreateSetting::route('/create'),
             'edit' => Pages\EditSetting::route('/{record}/edit'),
         ];
-    }
-
-    public static function canCreate(): bool
-    {
-        return auth()->user()?->can('create_settings') ?? false;
-    }
-
-    public static function canEdit(Model $record): bool
-    {
-        return auth()->user()?->can('edit_settings') ?? false;
-    }
-
-    public static function canDelete(Model $record): bool
-    {
-        return auth()->user()?->can('delete_settings') ?? false;
     }
 }
