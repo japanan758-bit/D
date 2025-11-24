@@ -10,14 +10,6 @@ class EditSetting extends EditRecord
 {
     protected static string $resource = SettingResource::class;
 
-    protected function getHeaderActions(): array
-    {
-        return [
-            Actions\DeleteAction::make()
-                ->label('حذف الإعداد'),
-        ];
-    }
-
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');
