@@ -5,6 +5,8 @@ namespace App\Filament\Resources\SettingResource\Pages;
 use App\Filament\Resources\SettingResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use App\Models\Setting;
+use Illuminate\Database\Eloquent\Builder;
 
 class ListSettings extends ListRecords
 {
@@ -13,8 +15,9 @@ class ListSettings extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            // Only allow creating if no settings exist
             Actions\CreateAction::make()
-                ->label('إضافة إعداد جديد'),
+                ->visible(fn () => Setting::count() === 0),
         ];
     }
 }

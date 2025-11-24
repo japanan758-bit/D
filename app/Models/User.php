@@ -21,7 +21,27 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
+
+    public function canAccessPanel(\Filament\Panel $panel): bool
+    {
+        // Only admins and staff can access the manager panel
+        if ($panel->getId() === 'admin') {
+            return in_array($this->role, ['admin', 'doctor', 'receptionist']);
+        }
+        return true;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isDoctor(): bool
+    {
+        return $this->role === 'doctor';
+    }
 
     /**
      * The attributes that should be hidden for serialization.

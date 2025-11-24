@@ -81,6 +81,14 @@ class MedicalRecord extends Model
         'vitals_height' => 'decimal:2',
         'vitals_weight' => 'decimal:2',
         'vitals_temp' => 'decimal:2',
+        'vital_signs' => 'array',
+        'attachments' => 'array',
+        'lab_results' => 'array',
+        'imaging_studies' => 'array',
+        'medications' => 'array',
+        'dosages' => 'array',
+        'frequencies' => 'array',
+        'durations' => 'array',
     ];
 
     /**
@@ -120,7 +128,7 @@ class MedicalRecord extends Model
      */
     public function getVitalSignsArrayAttribute(): array
     {
-        return json_decode($this->vital_signs ?? '{}', true);
+        return is_string($this->vital_signs) ? json_decode($this->vital_signs, true) : ($this->vital_signs ?? []);
     }
 
     /**
@@ -128,7 +136,7 @@ class MedicalRecord extends Model
      */
     public function getLabResultsArrayAttribute(): array
     {
-        return json_decode($this->lab_results ?? '{}', true);
+        return is_string($this->lab_results) ? json_decode($this->lab_results, true) : ($this->lab_results ?? []);
     }
 
     /**
@@ -136,7 +144,7 @@ class MedicalRecord extends Model
      */
     public function getImagingStudiesArrayAttribute(): array
     {
-        return json_decode($this->imaging_studies ?? '{}', true);
+        return is_string($this->imaging_studies) ? json_decode($this->imaging_studies, true) : ($this->imaging_studies ?? []);
     }
 
     /**
@@ -144,7 +152,7 @@ class MedicalRecord extends Model
      */
     public function getMedicationsArrayAttribute(): array
     {
-        return json_decode($this->medications ?? '[]', true);
+        return is_string($this->medications) ? json_decode($this->medications, true) : ($this->medications ?? []);
     }
 
     /**
@@ -152,7 +160,7 @@ class MedicalRecord extends Model
      */
     public function getDosagesArrayAttribute(): array
     {
-        return json_decode($this->dosages ?? '[]', true);
+        return is_string($this->dosages) ? json_decode($this->dosages, true) : ($this->dosages ?? []);
     }
 
     /**
@@ -160,7 +168,7 @@ class MedicalRecord extends Model
      */
     public function getFrequenciesArrayAttribute(): array
     {
-        return json_decode($this->frequencies ?? '[]', true);
+        return is_string($this->frequencies) ? json_decode($this->frequencies, true) : ($this->frequencies ?? []);
     }
 
     /**
@@ -168,7 +176,7 @@ class MedicalRecord extends Model
      */
     public function getDurationsArrayAttribute(): array
     {
-        return json_decode($this->durations ?? '[]', true);
+        return is_string($this->durations) ? json_decode($this->durations, true) : ($this->durations ?? []);
     }
 
     /**
@@ -176,7 +184,7 @@ class MedicalRecord extends Model
      */
     public function getAttachmentsArrayAttribute(): array
     {
-        return json_decode($this->attachments ?? '[]', true);
+        return is_string($this->attachments) ? json_decode($this->attachments, true) : ($this->attachments ?? []);
     }
 
     /**
