@@ -126,12 +126,18 @@ class ThemeBuilderController extends Controller
             'font_weight' => 'nullable|string'
         ]);
 
-        $typography = $request->only([
+        // Explicitly map line_height to line_height_normal if not provided
+        $data = $request->all();
+        if (isset($data['line_height']) && !isset($data['line_height_normal'])) {
+             $data['line_height_normal'] = $data['line_height'];
+        }
+
+        $typography = collect($data)->only([
             'font_family', 'font_family_fallback', 'font_size_base', 
             'font_size_sm', 'font_size_md', 'font_size_lg', 'font_size_xl', 'font_size_2xl',
             'line_height_tight', 'line_height_normal', 'line_height_relaxed',
             'font_weight_normal', 'font_weight_medium', 'font_weight_bold'
-        ]);
+        ])->toArray();
 
         $theme->update(['typography' => $typography]);
 

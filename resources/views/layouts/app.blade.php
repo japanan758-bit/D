@@ -30,6 +30,14 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
+    <!-- Theme Custom CSS -->
+    @php
+        $currentTheme = \App\Models\Theme::where('is_active', true)->first();
+    @endphp
+    @if($currentTheme)
+        <link rel="stylesheet" href="{{ asset('themes/' . $currentTheme->slug . '.css') }}">
+    @endif
+
     <!-- Livewire -->
     @livewireStyles
     
@@ -243,5 +251,10 @@
 
     <!-- Additional Scripts -->
     @stack('scripts')
+
+    <!-- Theme Custom JS -->
+    @if($currentTheme)
+        <script src="{{ asset('themes/' . $currentTheme->slug . '.js') }}"></script>
+    @endif
 </body>
 </html>
