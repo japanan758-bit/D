@@ -1,0 +1,26 @@
+# ============================================================
+# ملف .htaccess لحماية مجلد public storage
+# عيادة د. عبدالناصر الأخصور
+# ============================================================
+
+# السماح بالوصول للملفات الثابتة
+<FilesMatch "\.(jpg|jpeg|png|gif|svg|webp|pdf|doc|docx|xls|xlsx|txt)$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
+
+# منع تنفيذ PHP في مجلدات الصور
+<FilesMatch "\.(php|php3|php4|php5|phtml|pl|py|jsp|asp|sh|cgi)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# إعدادات الأمان
+Options -Indexes
+ServerSignature Off
+
+# Header أمان إضافي
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options DENY
+</IfModule>

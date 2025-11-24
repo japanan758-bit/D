@@ -1,0 +1,24 @@
+# ============================================================
+# ملف .htaccess لحماية مجلد storage
+# عيادة د. عبدالناصر الأخصور
+# ============================================================
+
+# منع الوصول للملفات بالكامل
+Order Deny,Allow
+Deny from all
+
+# استثناء الصور والملفات الثابتة
+<FilesMatch "\.(jpg|jpeg|png|gif|svg|webp|pdf|doc|docx|xls|xlsx|ppt|pptx|txt|rtf)$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
+
+# منع تنفيذ PHP في المجلدات الفرعية
+<FilesMatch "\.(php|php3|php4|php5|phtml|pl|py|jsp|asp|sh|cgi)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# حماية إضافية
+Options -Indexes
+ServerSignature Off
