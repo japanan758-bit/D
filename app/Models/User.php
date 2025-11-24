@@ -6,8 +6,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Filament\Models\Contracts\HasAvatar;
 
-class User extends Authenticatable
+class User extends Authenticatable implements HasAvatar
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
@@ -21,7 +22,33 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
+
+    public function canAccessPanel(\Filament\Panel $panel): bool
+    {
+        // Only admins and staff can access the manager panel
+        if ($panel->getId() === 'admin') {
+            return in_array($this->role, ['admin', 'doctor', 'receptionist']);
+        }
+        return true;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isDoctor(): bool
+    {
+        return $this->role === 'doctor';
+    }
+
+    public function getFilamentAvatarUrl(): ?string
+    {
+        // Return avatar URL if implemented, or null for default
+        return null;
+    }
 
     /**
      * The attributes that should be hidden for serialization.

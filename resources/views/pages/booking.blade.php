@@ -15,7 +15,34 @@
     <!-- Booking Form Section -->
     <section class="py-16 bg-gray-50">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            @livewire('booking-form')
+            @php
+                $settings = \App\Models\Setting::getSettings();
+            @endphp
+
+            @if($settings->enable_booking)
+                @livewire('booking-form')
+            @else
+                <div class="bg-white p-8 rounded-lg shadow-lg text-center">
+                    <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-10 h-10 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20 10.999h2C22 5.869 18.127 2 12.99 2v2C17.052 4 20 6.943 20 10.999z"/>
+                            <path d="M13 8c2.103 0 3 .897 3 3h2c0-3.225-1.614-5-5-5V8z"/>
+                            <path d="M16.444 2.239l-5.558 5.558a2.82 2.82 0 00-.828 1.998v5.059l-5.446-3.63a1 1 0 00-1.23.129l-1.175 1.175a1 1 0 000 1.414l3.536 3.536a1.002 1.002 0 00.129.129l1.175 1.175a1.002 1.002 0 001.414 0l3.536-3.536a1 1 0 00.129-1.23l-3.63-5.446h5.06a2.83 2.83 0 001.997-.828l5.558-5.558-4.667-4.667z"/>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">{{ __('الحجز الإلكتروني متوقف حالياً') }}</h2>
+                    <p class="text-lg text-gray-600 mb-8">
+                        {{ __('نعتذر، خدمة الحجز الإلكتروني غير متاحة في الوقت الحالي. يرجى الاتصال بنا مباشرة لحجز موعد.') }}
+                    </p>
+                    <a href="tel:{{ $settings->clinic_phone ?? '01055558199' }}"
+                       class="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg md:px-10">
+                        <svg class="w-6 h-6 ml-2 rtl:ml-0 rtl:mr-2" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                        </svg>
+                        {{ __('اتصل الآن للحجز') }}
+                    </a>
+                </div>
+            @endif
         </div>
     </section>
 
