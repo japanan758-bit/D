@@ -87,6 +87,16 @@ class PatientController extends Controller
      */
     public function showBookingForm()
     {
+        $settings = \App\Models\Setting::getSettings();
+
+        if (!$settings->enable_booking) {
+            return redirect()->route('home')->with('error', 'الحجز الإلكتروني متوقف حالياً، يرجى الاتصال بالعيادة');
+        }
+
+        // Guest booking is allowed even if registration is enabled.
+        // We only prompt, we don't force redirect unless specifically configured to force login (which we assume is not the case based on requirements).
+        // However, if the user wants to track history, they should login.
+
         $services = Service::where('is_active', true)->get();
         $doctors = Doctor::where('is_active', true)
             ->where('is_available', true)
@@ -189,6 +199,12 @@ class PatientController extends Controller
      */
     public function bookAppointment(Request $request)
     {
+        $settings = \App\Models\Setting::getSettings();
+
+        if (!$settings->enable_booking) {
+            return back()->with('error', 'الحجز الإلكتروني متوقف حالياً');
+        }
+
         $validated = $request->validate([
             'service_id' => 'required|exists:services,id',
             'doctor_id' => 'required|exists:doctors,id',

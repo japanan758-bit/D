@@ -30,6 +30,7 @@ class AppointmentResource extends Resource
 
     public static function form(Tables\Table $table): array
     {
+        // Placeholder for form method signature fix if needed, but actually we are editing table()
         return $table
             ->recordTitleAttribute('patient_name')
             ->columns([
@@ -114,6 +115,34 @@ class AppointmentResource extends Resource
                 Tables\Actions\DeleteAction::make()
                     ->label('حذف'),
             ])
+            ->headerActions([
+                // Simple CSV Export Action using pure PHP stream
+                Tables\Actions\Action::make('export')
+                    ->label('تصدير CSV')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->action(function () {
+                        $appointments = Appointment::with(['service', 'doctor'])->get();
+                        $filename = 'appointments-' . date('Y-m-d') . '.csv';
+
+                        return response()->streamDownload(function () use ($appointments) {
+                            $handle = fopen('php://output', 'w');
+                            fputcsv($handle, ['ID', 'Patient Name', 'Phone', 'Service', 'Doctor', 'Date', 'Status']);
+
+                            foreach ($appointments as $appointment) {
+                                fputcsv($handle, [
+                                    $appointment->id,
+                                    $appointment->patient_name,
+                                    $appointment->patient_phone,
+                                    $appointment->service->name ?? '',
+                                    $appointment->doctor->name ?? '',
+                                    $appointment->appointment_date,
+                                    $appointment->status
+                                ]);
+                            }
+                            fclose($handle);
+                        }, $filename);
+                    })
+            ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\BulkAction::make('تأكيد المحدد')
@@ -148,6 +177,9 @@ class AppointmentResource extends Resource
             'edit' => Pages\EditAppointment::route('/{record}/edit'),
         ];
     }
+
+    // Add explicit export logic here if not using pxlrbt/filament-excel
+    // Filament 3 has native Export actions which can be added to the table header.
 
     public static function canViewAny(): bool
     {

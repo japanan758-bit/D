@@ -14,6 +14,9 @@ class AppointmentService
      */
     public function checkAvailability($serviceId, $date, $time, $excludeId = null): bool
     {
+        // First, check if the doctor working hours allow this time (if we had doctor context here)
+        // For now, assuming basic check against existing appointments for the same service/doctor
+
         $query = Appointment::where('service_id', $serviceId)
             ->whereDate('appointment_date', $date)
             ->where('appointment_time', $time)
